@@ -5,12 +5,12 @@ if($env:APPVEYOR_REPO_BRANCH -and $env:APPVEYOR_REPO_BRANCH -notlike "master")
 }
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-$ModuleManifestName = 'BaselineCheck.psd1'
-Import-Module $PSScriptRoot\..\$ModuleManifestName
+$ModuleManifestName = 'VMwareBaselineCheck.psd1'
+Import-Module $PSScriptRoot\..\src\$ModuleManifestName
 
 Describe 'Module Manifest Tests' {
     It 'Passes Test-ModuleManifest' {
-        Test-ModuleManifest -Path $PSScriptRoot\..\$ModuleManifestName
+        Test-ModuleManifest -Path $PSScriptRoot\..\src\$ModuleManifestName
         $? | Should Be $true
     }
 }
