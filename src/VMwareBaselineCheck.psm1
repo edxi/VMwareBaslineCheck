@@ -2,11 +2,11 @@
 $ModulePath = $PSScriptRoot
 
 #Get public and private function definition files.
-    $Public  = Get-ChildItem $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue
-    $Private = Get-ChildItem $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue
-    [string[]]$PrivateModules = Get-ChildItem $PSScriptRoot\Private -ErrorAction SilentlyContinue |
+    $Public  = Get-ChildItem $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue
+    $Private = Get-ChildItem $PSScriptRoot\src\Private\*.ps1 -ErrorAction SilentlyContinue
+    [string[]]$PrivateModules = Get-ChildItem $PSScriptRoot\src\Private -ErrorAction SilentlyContinue |
         Where-Object {$_.PSIsContainer} |
-        Select -ExpandProperty FullName
+        Select-Object -ExpandProperty FullName
 
 # Dot source the files
     Foreach($import in @($Public + $Private))
