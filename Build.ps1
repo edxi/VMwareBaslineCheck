@@ -65,8 +65,9 @@
 ###############################################################################
 Properties {
     # The name of your module should match the basename of the PSD1 file.
-    $ModuleName = (Get-Item $PSScriptRoot\src\*.psd1 |
-                   Foreach-Object {$null = Test-ModuleManifest -Path $_ -ErrorAction SilentlyContinue; if ($?) {$_}})[0].BaseName
+    # $ModuleName = (Get-Item $PSScriptRoot\*.psd1 |
+                #    Foreach-Object {$null = Test-ModuleManifest -Path $_ -ErrorAction SilentlyContinue; if ($?) {$_}})[0].BaseName
+    $ModuleName = 'VMwareBaselineCheck'
 
     # Path to the release notes file.  Set to $null if the release notes reside in the manifest file.
     # $ReleaseNotesPath = "$PSScriptRoot\ReleaseNotes.md"
@@ -160,7 +161,7 @@ Task Test -depends Build {
 }
 
 Task Build -depends Clean, Init -requiredVariables PublishDir, Exclude, ModuleName {
-    Copy-Item -Path $PSScriptRoot\src\* -Destination $PublishDir -Recurse -Exclude $Exclude
+    Copy-Item -Path $PSScriptRoot\$ModuleName\* -Destination $PublishDir -Recurse -Exclude $Exclude
 
     # Get contents of the ReleaseNotes file and update the copied module manifest file
     # with the release notes.

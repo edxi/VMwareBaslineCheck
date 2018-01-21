@@ -1,6 +1,6 @@
 $projectRoot = "$PSScriptRoot/.."
 $moduleName = 'VMwareBaselineCheck'
-$manifestPath = "$PSScriptRoot/../src/VMwareBaselineCheck.psd1"
+$manifestPath = "$projectRoot/$moduleName/$moduleName.psd1"
 $manifest = Import-PowerShellDataFile -Path $manifestPath
 
 $changelogPath = Join-Path -Path $projectRoot -Child 'CHANGELOG.md'
