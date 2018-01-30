@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [vNext] Unreleased
 
+## [0.1.0] 2018-01-30
+
+### Added
+
+- Commit and Merged to master.
+- Help file for Compare-VesterOutput.
+- Composed Readme.
+
+### Changed
+
+- Renamed Function/Script name Compare-ScriptOutput to Compare-VesterOutput.
+- Changed xlsxfile parameter to mandatory.
+
+### Removed
+
+- Removed Get-FileName private function due to set xlsxfile parameter to mandatory.
+
 ## [0.0.3] 2018-01-30
 
 ### Added

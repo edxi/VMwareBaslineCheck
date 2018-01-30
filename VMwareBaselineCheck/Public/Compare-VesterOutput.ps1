@@ -1,43 +1,75 @@
 <#
     .SYNOPSIS
-    Load a pre-defined .xlsx file to check baseline item with Script outputs.
+    Load pre-defined .xlsx file(s) to check baseline items with Vester outputs.
 
     .DESCRIPTION
-    Read input from .xlsx file
-    Run script block which defined in .xlsx file, to generate outputs.
-    Compare items in .xlsx file with script outputs.
-    Output compare results to report xlsx file with hostname-datetime.
+    Read baseline check excel file.
+    Connect to vcenter server(s) and run Vester tests.
+    Optionally generate a new Vester config from exist server(s).
+    Compare items in .xlsx file with Vester outputs.
+    Fill compare results up to excel file.
 
     .PARAMETER xlsxfile
-    Input a .xlsx file which pre-defined format.
+    Input .xlsx file(s) which pre-defined format.
+
+    .PARAMETER vCenter
+    Connect vCenter Server(s) to check configurations.
+
+    .PARAMETER Credential
+    vCenter Credential
+
+    .PARAMETER ReadNewConfig
+    Generate new Vester config before run Vester tests.
+
+    .PARAMETER OutputFolder
+    Folder pass to New-VesterConfig while need generate new Vester config.
+
+    .PARAMETER Config
+    Config file pass to Invoke-Vester. It will be overwrited if ReadNewConfig parameter used.
+
+    .PARAMETER Test
+    Test folder or file pass to Invoke-Vester.
 
     .EXAMPLE
-    Compare-ScriptOutput baselineGP.xlsx
+    PS C:\>Import-Module VMware.VimAutomation.Vds
+    PS C:\>Import-Module PSExcel
+    PS C:\>Compare-VesterOutput
+    Run Directly will prompt provide excel file, and vcenter connection.
+    Vester tests will use Vester module default config file and Tests scripts.
+    In most cases, PSExcel and VMware VDs module must be imported explicitly.
+
+    .EXAMPLE
+    PS C:\>Compare-VesterOutput -ReadNewConfig
+    A new Vester configuration will be generated at VMwareBaselineCheck module's config folder.
+    Vester tests will use this config file.
+
+    .EXAMPLE
+    PS C:\>$xlsxfiles = @(".\baseline1.xlsx","c:\temp\baseline.xlsx")
+    PS C:\>$vCenters = @("vcenter1.vmlab.com","192.168.100.10")
+    PS C:\>$Credential = Get-Credential
+    PS C:\>$xlsxfiles | Compare-VesterOutput -vCenter $vCenters -Credential $Credential -Test ".\Tests"
+    It connects two vcenters and compare two excel files.
 
     .OUTPUTS
-    The compare results to report .xlsx file with hostname-datetime.
-
-    .NOTES
-    Author: Xi ErDe
-    Date:   Jan 14, 2018
+    The compare result write to predefined excel file's corresponded columns.
 #>
 
-function Compare-ScriptOutput {
+function Compare-VesterOutput {
     param (
         [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'NoCredential')]
         [Parameter(
             Position = 0,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Path to one or more xlsx file.')]
         [ValidateNotNullOrEmpty()]
-        [SupportsWildcards()]
         [string[]]
-        $xlsxfile = '',
+        $xlsxfile,
         [Parameter(ParameterSetName = 'NoCredential', Mandatory = $false, HelpMessage = 'vCenter server')]
         [Parameter(ParameterSetName = 'WithCredential', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $vCenter = '',
+        [string[]] $vCenter = '',
         [Parameter(ParameterSetName = 'WithCredential', Mandatory = $false, HelpMessage = 'vCenter server Credential')]
         [ValidateNotNullOrEmpty()]
         [pscredential]$Credential,
@@ -53,8 +85,6 @@ function Compare-ScriptOutput {
     )
 
     begin {
-        while ($xlsxfile[0] -eq '') {$xlsxfile = Get-FileName}
-
         if ($vCenter -eq '' -and $Credential -eq $null) {
             Connect-VIServer
         }
