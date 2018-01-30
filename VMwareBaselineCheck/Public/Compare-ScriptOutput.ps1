@@ -68,24 +68,57 @@ function Compare-ScriptOutput {
         }
 
         $InvokeVesterArgs = @{ Config = $Config; Test = $Test }
-        $ht2=$InvokeVesterArgs.Clone()
-        $ht2.GetEnumerator()|ForEach-Object{if($_.value -eq $null){$InvokeVesterArgs.Remove($_.key)}}
+        $ht2 = $InvokeVesterArgs.Clone()
+        $ht2.GetEnumerator()|ForEach-Object {if ($_.value -eq $null) {$InvokeVesterArgs.Remove($_.key)}}
         $VesterResult = Invoke-Vester @InvokeVesterArgs -PassThru
     }
 
-    # process {
-    #     foreach ($axlsxfile in $xlsxfile) {
-    #         $allBaselineSettings += Import-xlsx -Path $axlsxfile
-    #     }
+    process {
+        foreach ($axlsxfile in $xlsxfile) {
+            $ExcelVar = New-Excel -Path $axlsxfile
+            foreach ($ExcelSheet in $ExcelVar.Workbook.Worksheets) {
+                $ExcelSheet.Tables | ForEach-Object {
+                    $Coordinates = $_.address.address
+                    $ColumnStart = ($($Coordinates -split ":")[0] -replace "[0-9]", "").ToUpperInvariant()
+                    $ColumnEnd = ($($Coordinates -split ":")[1] -replace "[0-9]", "").ToUpperInvariant()
+                    [int]$RowStart = $($Coordinates -split ":")[0] -replace "[a-zA-Z]", ""
+                    [int]$RowEnd = $($Coordinates -split ":")[1] -replace "[a-zA-Z]", ""
+                    $Rows = $RowEnd - $RowStart + 1
+                    $ColumnStart = Get-ExcelColumnInt $ColumnStart
+                    $ColumnEnd = Get-ExcelColumnInt $ColumnEnd
+                    $Columns = $ColumnEnd - $ColumnStart + 1
 
-    #     $allBaselineSettings | Where-Object {$_.Script -ne '' -and $_.'Baseline Value' -ne ''} | ForEach-Object {
-    #         $ScriptReturn = &([Scriptblock]::Create($_.Script))
-    #         $_.'Actual Value' = $ScriptReturn['Actual Value']
-    #         $_.'Check Result' = $ScriptReturn['Check Result']
-    #     }
-    # }
+                    for ($i = $ColumnStart; $i -le $Columns; $i++) {
+                        if ($ExcelSheet.GetValue($RowStart, $i) -eq "Test Item") {
+                            $TestItemCol = $i
+                        }
+                        if ($ExcelSheet.GetValue($RowStart, $i) -eq "Difference") {
+                            $DifferenceCol = $i
+                        }
+                        if ($ExcelSheet.GetValue($RowStart, $i) -eq "Compliance") {
+                            $ComplianceCol = $i
+                        }
+                    }
 
-    # end {
-    #     $allBaselineSettings | Export-xlsx -Path "$env:TEMP\$env:COMPUTERNAME-$(Get-Date -UFormat "%Y%m%d-%H%M%S").xlsx" -NoTypeInformation
-    # }
+                    if ($TestItemCol -ne $null -and $DifferenceCol -ne $null -and $ComplianceCol -ne $null) {
+                        for ($i = $RowStart + 1; $i -lt $Rows; $i++) {
+                            if ($ExcelSheet.GetValue($i, $TestItemCol) -ne $null) {
+                                $VesterResult.TestResult | ForEach-Object {
+                                    if ($_.Name -match $ExcelSheet.GetValue($i, $TestItemCol)) {
+                                        $Compliance = @{$true = 'Yes'; $false = 'No'}
+                                        $ExcelSheet.SetValue($i, $ComplianceCol, $Compliance[$_.Passed])
+                                        $ExcelSheet.SetValue($i, $DifferenceCol, $_.FailureMessage)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $ExcelVar | Save-Excel -Close
+        }
+    }
+
+    end {
+    }
 }
