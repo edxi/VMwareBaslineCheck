@@ -12,7 +12,7 @@
 RootModule = 'VMwareBaselineCheck.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.0.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -21,19 +21,19 @@ ModuleVersion = '0.0.1'
 GUID = '16a86a5e-8846-43fd-a553-bc7a61bffe49'
 
 # Author of this module
-Author = 'edxi'
+Author = 'Xi ErDe'
 
 # Company or vendor of this module
 CompanyName = 'Unknown'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 edxi. All rights reserved.'
+Copyright = '(c) 2018 Xi ErDe. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'VMware Baseline check.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '3.0'
+PowerShellVersion = '5.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -51,7 +51,7 @@ PowerShellVersion = '3.0'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+# RequiredModules = @('Vester','PSExcel')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -96,7 +96,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @()
+        Tags = @('vmware','vcenter','vsphere','esxi','powercli')
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/edxi/VMwareBaselineCheck/blob/master/LICENSE'

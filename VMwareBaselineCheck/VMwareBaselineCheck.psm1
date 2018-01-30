@@ -2,34 +2,37 @@
 $ModulePath = $PSScriptRoot
 
 #Get public and private function definition files.
-    $Public  = Get-ChildItem $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue
-    $Private = Get-ChildItem $PSScriptRoot\src\Private\*.ps1 -ErrorAction SilentlyContinue
-    [string[]]$PrivateModules = Get-ChildItem $PSScriptRoot\src\Private -ErrorAction SilentlyContinue |
-        Where-Object {$_.PSIsContainer} |
-        Select-Object -ExpandProperty FullName
+$Public  = Get-ChildItem $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue
+$Private = Get-ChildItem $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue
+[string[]]$PrivateModules = Get-ChildItem $PSScriptRoot\Private -ErrorAction SilentlyContinue |
+    Where-Object {$_.PSIsContainer} |
+    Select-Object -ExpandProperty FullName
 
 # Dot source the files
-    Foreach($import in @($Public + $Private))
+Foreach($import in (@($Public) + @($Private)))
+{
+    Try
     {
-        Try
-        {
-            . $import.fullname
-        }
-        Catch
-        {
-            Write-Error "Failed to import function $($import.fullname): $_"
-        }
+        . $import.fullname
     }
+    Catch
+    {
+        Write-Error "Failed to import function $($import.fullname): $_"
+    }
+}
 
 # Load up dependency modules
-    foreach($Module in $PrivateModules)
+foreach($Module in $PrivateModules)
+{
+    Try
     {
-        Try
-        {
-            Import-Module $Module -ErrorAction Stop
-        }
-        Catch
-        {
-            Write-Error "Failed to import module $Module`: $_"
-        }
+        Import-Module $Module -ErrorAction Stop
     }
+    Catch
+    {
+        Write-Error "Failed to import module $Module`: $_"
+    }
+}
+
+# Export the public functions for module use
+Export-ModuleMember -Function $Public.Basename

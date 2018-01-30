@@ -23,7 +23,7 @@ Function Get-FileName {
 
     $OpenFileDialog = New-Object -TypeName System.Windows.Forms.OpenFileDialog
     $OpenFileDialog.initialDirectory = $initialDirectory
-    $OpenFileDialog.filter = 'CSV (*.csv)| *.csv'
+    $OpenFileDialog.filter = 'XLSX (*.xlsx)| *.xlsx'
     $null = $OpenFileDialog.ShowDialog()
     return $OpenFileDialog.filename
 }
