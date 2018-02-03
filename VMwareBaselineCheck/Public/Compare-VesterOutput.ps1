@@ -56,23 +56,17 @@
 
 function Compare-VesterOutput {
     param (
-        [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'NoCredential')]
+        [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'xlsxfile')]
         [Parameter(
             Position = 0,
             Mandatory = $true,
+            ParameterSetName = 'xlsxfile',
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Path to one or more xlsx file.')]
         [ValidateNotNullOrEmpty()]
         [string[]]
         $xlsxfile,
-        [Parameter(ParameterSetName = 'NoCredential', Mandatory = $false, HelpMessage = 'vCenter server')]
-        [Parameter(ParameterSetName = 'WithCredential', Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string[]] $vCenter = '',
-        [Parameter(ParameterSetName = 'WithCredential', Mandatory = $false, HelpMessage = 'vCenter server Credential')]
-        [ValidateNotNullOrEmpty()]
-        [pscredential]$Credential,
         [Parameter(Mandatory = $false, HelpMessage = 'Generate new config JSON')]
         [switch]$ReadNewConfig = $false,
         [Parameter(Mandatory = $false, HelpMessage = 'Folder pass to New-VesterConfig')]
@@ -85,13 +79,6 @@ function Compare-VesterOutput {
     )
 
     begin {
-        if ($vCenter -eq '' -and $Credential -eq $null) {
-            Connect-VIServer
-        }
-        else {
-            Connect-VIServer -Server $vCenter -Credential $Credential
-        }
-
         if ($ReadNewConfig) {
             New-VesterConfig -OutputFolder $OutputFolder
             $Config = "$OutputFolder\Config.json"

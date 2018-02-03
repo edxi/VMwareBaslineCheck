@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [vNext] Unreleased
 
+## [0.1.1] 2018-02-03
+
+### Removed
+
+- Removed vcenter/credential parameter from Compare-VesterOutput
+
 ## [0.1.0] 2018-01-30
 
 ### Added

@@ -3,9 +3,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/p778wr2eg3hvmcoc?svg=true)](https://ci.appveyor.com/project/edxi/vmwarebaslinecheck)
 
 The purpose of this script which is provides VMware baseline check functions.
-It reads baseline items from a predefined excel file. And it based on [Vester](https://github.com/WahlNetwork/Vester) to get server configurations.
+It reads baseline items from a predefined excel file. And it based on [Vester](https://github.com/WahlNetwork/Vester) to get server configurations. Exports the Vester tests output as check results to the predefined excel file.
 > Vester is a community project that provides an extremely light-weight approach to configuration management of your VMware environment.
-Exports the Vester tests output as check results to the predefined excel file.
 
 ## Features
 
@@ -21,12 +20,14 @@ Exports the Vester tests output as check results to the predefined excel file.
 ### Run without parameter
 
 ```powershell
+PS C:\>Connect-ViServer
 PS C:\>Import-Module VMware.VimAutomation.Vds
 PS C:\>Import-Module PSExcel
 PS C:\>Compare-VesterOutput
 ```
 
 Run Directly will prompt provide excel file, and vcenter connection.
+vCenter(s) should already be connected.
 Vester tests will use Vester module default config file and Tests scripts.
 In most cases, PSExcel and VMware VDs module must be imported explicitly.
 
@@ -43,12 +44,10 @@ Vester tests will use this config file.
 
 ```powershell
 PS C:\>$xlsxfiles = @(".\baseline1.xlsx","c:\temp\baseline.xlsx")
-PS C:\>$vCenters = @("vcenter1.vmlab.com","192.168.100.10")
-PS C:\>$Credential = Get-Credential
-PS C:\>$xlsxfiles | Compare-VesterOutput -vCenter $vCenters -Credential $Credential -Test ".\Tests"
+PS C:\>$xlsxfiles | Compare-VesterOutput -Test ".\Tests"
 ```
 
-It connects two vcenters and compares two excel files.
+It compares two excel files with dedicated Vester Tests scripts folder.
 
 ## Feedback
 
